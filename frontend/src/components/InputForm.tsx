@@ -98,7 +98,7 @@ export default function InputForm({
   onClose,
 }: Props) {
   const [incomeMode, setIncomeMode] = useState<'annual' | 'monthly'>('annual');
-  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [showAdvanced, setShowAdvanced] = useState(true);
 
   const displayIncome =
     incomeMode === 'annual'
@@ -221,6 +221,9 @@ export default function InputForm({
               <span>0% (전액 현금)</span>
               <span>70%</span>
             </div>
+            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+              집값 대비 대출 가능 비율입니다. 예: 70%면 5억 집에 3.5억 대출, 나머지 1.5억은 자기 자금으로 마련해야 합니다.
+            </p>
           </div>
 
           {/* 고급 옵션 */}
@@ -264,6 +267,9 @@ export default function InputForm({
                   }
                   className="w-full mt-1 accent-blue-600"
                 />
+                <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                  저축한 돈에 붙는 연간 이자율입니다. 예금·적금 금리나 투자 수익률을 기준으로 설정하세요. 일반 적금 약 3~4%, 투자 포함 시 5~7% 정도입니다.
+                </p>
               </div>
 
               <div>
@@ -281,6 +287,9 @@ export default function InputForm({
                   }
                   className="w-full mt-1 accent-blue-600"
                 />
+                <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                  매년 집값이 얼마나 오를지 예상치입니다. 최근 10년 전국 평균 약 3~5%이며, 마이너스로 설정하면 집값 하락을 가정합니다.
+                </p>
               </div>
 
               <div>
