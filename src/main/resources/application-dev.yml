@@ -5,27 +5,6 @@ spring:
         format_sql: true
     show-sql: true
 
-# Kakao
-kakao:
-  rest-api-key: 071e9cfa8cf0c11115ffc985a0855a25
-  js-key: 05bb33c221400c75a1e42bea94a2490c
-
-# data.go.kr
-data-go-kr:
-  service-key: "FqGNJS5nA4A2EghMNQ2nioRn3miWarU6wAIEyLxAqpEdKkkrTeCNpvq+laZyaCz2HrQvt/K4I0+RH58d5W2UaQ=="
-
-# Encryption
-crypto:
-  profile-key: 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
-
-# Cron
-cron:
-  secret: zipimoney-dev-cron-secret
-
-# JWT
-jwt:
-  secret: zipimoney-dev-jwt-secret-change-in-prod-32chars!!
-
 logging:
   level:
     kr.zipimoney: DEBUG

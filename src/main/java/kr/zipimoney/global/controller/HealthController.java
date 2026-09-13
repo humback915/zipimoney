@@ -11,7 +11,7 @@ public class HealthController {
 
     private final Instant startedAt = Instant.now();
 
-    @GetMapping("/")
+    @GetMapping("/api/health")
     public Map<String, Object> health() {
         return Map.of(
                 "status", "ok",
