@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /swagger-ui/
+Disallow: /api-docs/
+Disallow: /kakao/callback
+
+Sitemap: https://zipimoney.com/sitemap.xml

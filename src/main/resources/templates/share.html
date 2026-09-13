@@ -3,10 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta property="og:type" content="website">
+    <meta property="og:site_name" content="ZIPIMONEY">
+    <meta property="og:locale" content="ko_KR">
     <meta property="og:title" th:content="${title}">
     <meta property="og:description" th:content="${description}">
-    <meta property="og:image" th:content="${imageUrl}" th:if="${imageUrl}">
+    <meta property="og:image" th:content="${imageUrl}">
     <meta property="og:url" th:content="${url}">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" th:content="${title}">
+    <meta name="twitter:description" th:content="${description}">
+    <meta name="twitter:image" th:content="${imageUrl}">
     <title th:text="${title}">ZIPIMONEY</title>
 </head>
 <body>

@@ -60,7 +60,7 @@ public class SharePageController {
 
         model.addAttribute("title", title);
         model.addAttribute("description", description);
-        model.addAttribute("imageUrl", null);
+        model.addAttribute("imageUrl", baseUrl + "/og-image.png");
         model.addAttribute("url", baseUrl + "/s/" + shareKey);
         model.addAttribute("spaUrl", "/s/" + shareKey);
 

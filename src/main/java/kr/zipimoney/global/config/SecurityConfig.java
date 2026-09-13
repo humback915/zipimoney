@@ -55,7 +55,7 @@ public class SecurityConfig {
                         // Swagger / API docs
                         .requestMatchers("/swagger-ui/**", "/api-docs/**", "/v3/api-docs/**").permitAll()
                         // Static resources
-                        .requestMatchers("/", "/index.html", "/assets/**", "/favicon.ico").permitAll()
+                        .requestMatchers("/", "/index.html", "/assets/**", "/favicon.ico", "/favicon.svg", "/og-image.png", "/robots.txt", "/sitemap.xml").permitAll()
                         // All other requests require authentication
                         .anyRequest().authenticated()
                 )
