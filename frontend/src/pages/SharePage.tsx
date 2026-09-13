@@ -1,6 +1,8 @@
 import { useParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { apiFetch } from '../api/client'
+import { useAuth } from '../hooks/useAuth'
+import LoginOverlay from '../components/LoginOverlay'
 
 interface ShareCardData {
   sigungu: string
@@ -13,12 +15,25 @@ interface ShareCardData {
 
 export default function SharePage() {
   const { shareKey } = useParams<{ shareKey: string }>()
+  const { user, isLoading: authLoading } = useAuth()
 
   const { data, isLoading } = useQuery({
     queryKey: ['share', shareKey],
     queryFn: () => apiFetch<ShareCardData>(`/api/share/${shareKey}`),
-    enabled: !!shareKey,
+    enabled: !!shareKey && !!user,
   })
+
+  if (authLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <p>로딩 중...</p>
+      </div>
+    )
+  }
+
+  if (!user) {
+    return <LoginOverlay />
+  }
 
   if (isLoading) {
     return (

@@ -4,6 +4,7 @@ import { calculate } from '../lib/calculator';
 import type { AptComplex, CalcResult, PropertyType } from '../lib/types';
 import { useAppStore } from '../stores/app-store';
 import { useGeolocation } from '../hooks/useGeolocation';
+import { useAuth } from '../hooks/useAuth';
 import KakaoMap from '../components/KakaoMap';
 import RegionSelector from '../components/RegionSelector';
 import ComplexBottomSheet from '../components/ComplexBottomSheet';
@@ -13,6 +14,7 @@ import { MapSkeleton, MapErrorFallback, DealsLoadingOverlay, DealsErrorOverlay, 
 import SearchBar from '../components/SearchBar';
 import AuthButton from '../components/AuthButton';
 import HistoryDrawer from '../components/HistoryDrawer';
+import LoginOverlay from '../components/LoginOverlay';
 
 async function fetchRegion(lat: number, lng: number) {
   const res = await fetch(`/api/geocode?lat=${lat}&lng=${lng}`);
@@ -38,14 +40,24 @@ function getCurrentYmd(): string {
 export default function HomePage() {
   const geo = useGeolocation();
   const store = useAppStore();
+  const { user } = useAuth();
   const [calcResult, setCalcResult] = useState<CalcResult | null>(null);
   const [mapReady, setMapReady] = useState(false);
   const [mapMoved, setMapMoved] = useState(false);
   const [pendingCenter, setPendingCenter] = useState<{ lat: number; lng: number } | null>(null);
   const [showHistory, setShowHistory] = useState(false);
+  const [showLoginOverlay, setShowLoginOverlay] = useState(false);
   const [, setShowProfile] = useState(false);
   const [mapLoadFailed, setMapLoadFailed] = useState(false);
   const [propertyFilter, setPropertyFilter] = useState<PropertyType>('all');
+
+  const requireAuth = (action: () => void) => {
+    if (!user) {
+      setShowLoginOverlay(true);
+      return;
+    }
+    action();
+  };
 
   // 카카오맵 SDK 로드 (autoload=false)
   useEffect(() => {
@@ -211,7 +223,7 @@ export default function HomePage() {
               setShowProfile(true);
               store.setShowInputForm(true);
             }}
-            onShowHistory={() => setShowHistory(true)}
+            onShowHistory={() => requireAuth(() => setShowHistory(true))}
           />
         </div>
         <div className="mt-2 flex items-center gap-2">
@@ -332,7 +344,7 @@ export default function HomePage() {
 
         {/* 내 조건 입력하기 FAB */}
         <button
-          onClick={() => store.setShowInputForm(true)}
+          onClick={() => requireAuth(() => store.setShowInputForm(true))}
           className="absolute bottom-4 right-4 bg-brand-500 text-white px-6 py-3.5
                      rounded-full shadow-md hover:bg-brand-700 transition-colors
                      font-semibold text-sm z-20"
@@ -346,7 +358,7 @@ export default function HomePage() {
         <ComplexBottomSheet
           complex={store.selectedComplex}
           onClose={() => store.setSelectedComplex(null)}
-          onCalculate={handleCalculate}
+          onCalculate={(price) => requireAuth(() => handleCalculate(price))}
         />
       )}
 
@@ -369,6 +381,11 @@ export default function HomePage() {
           regionName={store.regionName}
           onClose={() => store.setShowResult(false)}
         />
+      )}
+
+      {/* 로그인 오버레이 */}
+      {showLoginOverlay && (
+        <LoginOverlay onClose={() => setShowLoginOverlay(false)} />
       )}
 
       {/* 계산 이력 */}

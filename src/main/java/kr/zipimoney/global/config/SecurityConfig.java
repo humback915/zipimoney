@@ -38,29 +38,24 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/auth/kakao").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/refresh").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/logout").permitAll()
-                        // Public API endpoints
+                        // Public API endpoints (지도 데이터 조회용)
                         .requestMatchers(HttpMethod.GET, "/api/region").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/geocode").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/search").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/deals").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/complex").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/calculate").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/share").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/health").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/cron/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/og/**").permitAll()
-                        // Short URL
+                        // Short URL & SPA routes
                         .requestMatchers("/s/**").permitAll()
+                        .requestMatchers("/kakao/callback").permitAll()
                         // Swagger / API docs
                         .requestMatchers("/swagger-ui/**", "/api-docs/**", "/v3/api-docs/**").permitAll()
                         // Static resources
                         .requestMatchers("/", "/index.html", "/assets/**", "/favicon.ico").permitAll()
-                        // Authenticated endpoints
-                        .requestMatchers("/api/auth/me", "/api/auth/withdraw").authenticated()
-                        .requestMatchers("/api/profile/**").authenticated()
-                        .requestMatchers("/api/consent/**").authenticated()
-                        .requestMatchers("/api/history").authenticated()
-                        // Allow all other requests (SPA static resources)
-                        .anyRequest().permitAll()
+                        // All other requests require authentication
+                        .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(exceptions -> exceptions
