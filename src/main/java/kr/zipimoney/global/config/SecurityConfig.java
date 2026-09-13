@@ -1,6 +1,7 @@
 package kr.zipimoney.global.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import kr.zipimoney.global.filter.RateLimitFilter;
 import kr.zipimoney.global.response.ApiResponse;
 import kr.zipimoney.global.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthFilter;
+    private final RateLimitFilter rateLimitFilter;
     private final ObjectMapper objectMapper;
 
     @Bean
@@ -57,6 +59,7 @@ public class SecurityConfig {
                         // All other requests require authentication
                         .anyRequest().authenticated()
                 )
+                .addFilterBefore(rateLimitFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(exceptions -> exceptions
                         .authenticationEntryPoint((request, response, authException) -> {

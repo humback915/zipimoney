@@ -17,7 +17,14 @@ RUN gradle bootJar --no-daemon
 
 # Stage 3: Runtime
 FROM eclipse-temurin:21-jre-alpine
+RUN apk add --no-cache curl
 WORKDIR /app
 COPY --from=backend-build /app/build/libs/*.jar app.jar
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar"]
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+  CMD curl -f http://localhost:8080/api/health || exit 1
+ENTRYPOINT ["java", \
+  "-Xms512m", "-Xmx2g", \
+  "-XX:+UseG1GC", "-XX:MaxGCPauseMillis=200", \
+  "-Djava.security.egd=file:/dev/./urandom", \
+  "-jar", "app.jar"]

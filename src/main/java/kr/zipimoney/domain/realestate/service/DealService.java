@@ -82,13 +82,20 @@ public class DealService {
         LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
 
         List<AptComplex> complexes = complexRepository.findAllByLawdCd(lawdCd);
+        if (complexes.isEmpty()) return null;
+
+        // 전체 단지의 거래를 한 번의 쿼리로 조회 (N+1 방지)
+        List<Long> complexIds = complexes.stream().map(AptComplex::getId).toList();
+        List<AptTrade> allTrades = tradeRepository
+                .findAllByComplexIdInAndDealDateBetweenAndCanceledFalse(complexIds, startDate, endDate);
+
+        // complexId별로 그루핑
+        Map<Long, List<AptTrade>> tradesByComplex = allTrades.stream()
+                .collect(Collectors.groupingBy(AptTrade::getComplexId));
 
         List<ComplexResponse> result = new ArrayList<>();
         for (AptComplex complex : complexes) {
-            List<AptTrade> trades = tradeRepository
-                    .findAllByComplexIdAndDealDateBetweenAndCanceledFalse(
-                            complex.getId(), startDate, endDate);
-
+            List<AptTrade> trades = tradesByComplex.getOrDefault(complex.getId(), List.of());
             if (trades.isEmpty()) continue;
 
             long avgPrice = trades.stream()
