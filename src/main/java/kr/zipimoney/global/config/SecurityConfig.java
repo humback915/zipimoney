@@ -49,7 +49,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/og/**").permitAll()
                         // Short URL & SPA routes
                         .requestMatchers("/s/**").permitAll()
-                        .requestMatchers("/kakao/callback").permitAll()
+                        .requestMatchers("/kakao/callback", "/privacy", "/terms").permitAll()
                         // Swagger / API docs
                         .requestMatchers("/swagger-ui/**", "/api-docs/**", "/v3/api-docs/**").permitAll()
                         // Static resources

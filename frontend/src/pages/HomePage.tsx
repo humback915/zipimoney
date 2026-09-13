@@ -1,4 +1,5 @@
 import { useEffect, useCallback, useState, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { calculate } from '../lib/calculator';
 import type { AptComplex, CalcResult, PropertyType } from '../lib/types';
@@ -399,6 +400,10 @@ export default function HomePage() {
           본 앱은 재미용이며 실제 투자·대출 판단의 근거가 될 수 없습니다.
           실거래가는 국토교통부 공개 데이터를 기반으로 하며 실제 시세와 다를 수 있습니다.
         </p>
+        <div className="mt-1 flex justify-center gap-3 text-[10px] text-gray-400 dark:text-gray-500">
+          <Link to="/terms" className="hover:text-gray-600 dark:hover:text-gray-300 underline">이용약관</Link>
+          <Link to="/privacy" className="hover:text-gray-600 dark:hover:text-gray-300 underline">개인정보 처리방침</Link>
+        </div>
       </footer>
     </div>
   );
