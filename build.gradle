@@ -1,0 +1,103 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.3.11'
+    id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'kr'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Spring Boot Starters
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-undertow'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
+
+    // Exclude Tomcat
+    modules {
+        module('org.springframework.boot:spring-boot-starter-tomcat') {
+            replacedBy('org.springframework.boot:spring-boot-starter-undertow', 'Use Undertow instead of Tomcat')
+        }
+    }
+
+    // Database
+    runtimeOnly 'org.postgresql:postgresql'
+    implementation 'org.flywaydb:flyway-core'
+    implementation 'org.flywaydb:flyway-database-postgresql'
+
+    // JWT
+    implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6'
+
+    // Cache
+    implementation 'com.github.ben-manes.caffeine:caffeine'
+
+    // API Documentation
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
+
+    // MapStruct
+    implementation 'org.mapstruct:mapstruct:1.5.5.Final'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
+    annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
+
+    // XML Parsing (data.go.kr)
+    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml'
+
+    // Lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    // Test
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testRuntimeOnly 'com.h2database:h2'
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+// Frontend build task (skip if frontend/package.json doesn't exist)
+tasks.register('npmBuild', Exec) {
+    workingDir 'frontend'
+    commandLine 'npm', 'run', 'build'
+    onlyIf { file('frontend/package.json').exists() && file('frontend/node_modules').exists() }
+}
+
+tasks.register('copyFrontend', Copy) {
+    dependsOn 'npmBuild'
+    from 'frontend/dist'
+    into 'src/main/resources/static'
+    onlyIf { file('frontend/dist').exists() }
+}
+
+// Only depend on frontend build if explicitly enabled
+if (project.hasProperty('withFrontend')) {
+    tasks.named('processResources') {
+        dependsOn 'copyFrontend'
+    }
+}

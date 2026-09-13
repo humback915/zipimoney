@@ -1,0 +1,72 @@
+spring:
+  application:
+    name: zipimoney
+
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:zipimoney}
+    username: ${DB_USERNAME:zipimoney}
+    password: ${DB_PASSWORD:zipimoney_local}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        format_sql: true
+        physical_naming_strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
+        default_batch_fetch_size: 100
+    open-in-view: false
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+
+  jackson:
+    default-property-inclusion: non_null
+
+server:
+  port: 8080
+
+# JWT
+jwt:
+  secret: ${JWT_SECRET:default-dev-secret-must-be-at-least-32-chars-long!!}
+  access-expiration: 3600000        # 1 hour in ms
+  refresh-expiration: 2592000000    # 30 days in ms
+
+# Kakao
+kakao:
+  rest-api-key: ${KAKAO_REST_API_KEY:}
+  js-key: ${KAKAO_JS_KEY:}
+
+# data.go.kr
+data-go-kr:
+  service-key: ${DATA_GO_KR_SERVICE_KEY:}
+
+# Encryption
+crypto:
+  profile-key: ${PROFILE_ENCRYPTION_KEY:}
+
+# Cron
+cron:
+  secret: ${CRON_SECRET:}
+
+# Springdoc
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /api-docs
+
+# Cache
+spring.cache:
+  type: caffeine
+  caffeine:
+    spec: maximumSize=500,expireAfterWrite=300s
+
+# Logging
+logging:
+  level:
+    kr.zipimoney: DEBUG
+    org.hibernate.SQL: DEBUG

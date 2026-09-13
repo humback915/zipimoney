@@ -1,0 +1,10 @@
+# Copy this file to terraform.tfvars and fill in actual values
+# DO NOT commit terraform.tfvars to git
+
+db_password            = "change-me-strong-password-here"
+jwt_secret             = "change-me-at-least-32-characters-long!!"
+profile_encryption_key = "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+cron_secret            = "change-me-cron-secret"
+kakao_rest_api_key     = ""
+kakao_js_key           = ""
+data_go_kr_service_key = ""

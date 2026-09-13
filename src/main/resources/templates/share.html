@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta property="og:type" content="website">
+    <meta property="og:title" th:content="${title}">
+    <meta property="og:description" th:content="${description}">
+    <meta property="og:image" th:content="${imageUrl}" th:if="${imageUrl}">
+    <meta property="og:url" th:content="${url}">
+    <title th:text="${title}">ZIPIMONEY</title>
+</head>
+<body>
+    <script th:inline="javascript">
+        window.location.href = /*[[${spaUrl}]]*/ '/';
+    </script>
+</body>
+</html>
