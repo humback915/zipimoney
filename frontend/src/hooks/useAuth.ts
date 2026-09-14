@@ -13,7 +13,8 @@ async function fetchMe(): Promise<User | null> {
   const res = await fetch('/api/auth/me', { credentials: 'include' })
   if (res.status === 401) return null
   if (!res.ok) return null
-  return res.json()
+  const json = await res.json()
+  return json.data ?? null
 }
 
 export function useAuth() {

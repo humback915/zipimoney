@@ -24,8 +24,11 @@ public class SpaWebConfig implements WebMvcConfigurer {
                 .addResolver(new PathResourceResolver() {
                     @Override
                     protected Resource getResource(String resourcePath, Resource location) throws IOException {
+                        // /api/ 경로는 폴백하지 않음 (컨트롤러가 처리)
+                        if (resourcePath.startsWith("api/")) {
+                            return null;
+                        }
                         Resource requested = location.createRelative(resourcePath);
-                        // 실제 파일이 있으면 그 파일 서빙, 없으면 index.html (SPA 폴백)
                         return requested.exists() && requested.isReadable()
                                 ? requested
                                 : new ClassPathResource("/static/index.html");
