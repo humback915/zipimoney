@@ -49,6 +49,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/health").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/cron/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/og/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/share/**").permitAll()
                         // Short URL & SPA routes
                         .requestMatchers("/s/**").permitAll()
                         .requestMatchers("/kakao/callback", "/privacy", "/terms").permitAll()
