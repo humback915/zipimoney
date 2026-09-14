@@ -19,9 +19,13 @@ public class KakaoAuthClient {
 
     private final RestClient restClient;
     private final String restApiKey;
+    private final String clientSecret;
 
-    public KakaoAuthClient(@Value("${kakao.rest-api-key}") String restApiKey) {
+    public KakaoAuthClient(
+            @Value("${kakao.rest-api-key}") String restApiKey,
+            @Value("${kakao.client-secret:}") String clientSecret) {
         this.restApiKey = restApiKey;
+        this.clientSecret = clientSecret;
         this.restClient = RestClient.create();
     }
 
@@ -31,6 +35,9 @@ public class KakaoAuthClient {
         body.add("client_id", restApiKey);
         body.add("redirect_uri", redirectUri);
         body.add("code", code);
+        if (clientSecret != null && !clientSecret.isBlank()) {
+            body.add("client_secret", clientSecret);
+        }
 
         log.info("카카오 토큰 교환 요청: redirectUri={}", redirectUri);
 

@@ -38,6 +38,7 @@ jwt:
 # Kakao
 kakao:
   rest-api-key: ${KAKAO_REST_API_KEY:}
+  client-secret: ${KAKAO_CLIENT_SECRET:}
   js-key: ${KAKAO_JS_KEY:}
 
 # data.go.kr

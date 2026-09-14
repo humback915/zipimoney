@@ -41,6 +41,7 @@ resource "aws_ecs_task_definition" "app" {
       { name = "PROFILE_ENCRYPTION_KEY", value = var.profile_encryption_key },
       { name = "CRON_SECRET", value = var.cron_secret },
       { name = "KAKAO_REST_API_KEY", value = var.kakao_rest_api_key },
+      { name = "KAKAO_CLIENT_SECRET", value = var.kakao_client_secret },
       { name = "KAKAO_JS_KEY", value = var.kakao_js_key },
       { name = "DATA_GO_KR_SERVICE_KEY", value = var.data_go_kr_service_key },
     ]

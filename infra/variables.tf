@@ -32,6 +32,11 @@ variable "kakao_rest_api_key" {
   sensitive = true
 }
 
+variable "kakao_client_secret" {
+  default   = ""
+  sensitive = true
+}
+
 variable "kakao_js_key" {
   default   = ""
   sensitive = true
