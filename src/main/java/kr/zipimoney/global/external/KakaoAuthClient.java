@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientResponseException;
 
 @Slf4j
 @Component
@@ -31,6 +32,8 @@ public class KakaoAuthClient {
         body.add("redirect_uri", redirectUri);
         body.add("code", code);
 
+        log.info("카카오 토큰 교환 요청: redirectUri={}", redirectUri);
+
         try {
             return restClient.post()
                     .uri("https://kauth.kakao.com/oauth/token")
@@ -38,8 +41,11 @@ public class KakaoAuthClient {
                     .body(body)
                     .retrieve()
                     .body(KakaoTokenResponse.class);
+        } catch (RestClientResponseException e) {
+            log.error("카카오 토큰 교환 실패: status={}, body={}", e.getStatusCode(), e.getResponseBodyAsString());
+            throw new DomainException(DomainExceptionCode.KAKAO_TOKEN_EXCHANGE_FAILED);
         } catch (Exception e) {
-            log.error("카카오 토큰 교환 실패", e);
+            log.error("카카오 토큰 교환 실패: {}", e.getMessage(), e);
             throw new DomainException(DomainExceptionCode.KAKAO_TOKEN_EXCHANGE_FAILED);
         }
     }
@@ -51,8 +57,11 @@ public class KakaoAuthClient {
                     .header("Authorization", "Bearer " + kakaoAccessToken)
                     .retrieve()
                     .body(KakaoUserInfo.class);
+        } catch (RestClientResponseException e) {
+            log.error("카카오 사용자 정보 조회 실패: status={}, body={}", e.getStatusCode(), e.getResponseBodyAsString());
+            throw new DomainException(DomainExceptionCode.KAKAO_USER_INFO_FAILED);
         } catch (Exception e) {
-            log.error("카카오 사용자 정보 조회 실패", e);
+            log.error("카카오 사용자 정보 조회 실패: {}", e.getMessage(), e);
             throw new DomainException(DomainExceptionCode.KAKAO_USER_INFO_FAILED);
         }
     }
