@@ -267,9 +267,11 @@ export default function ResultView({
                     }),
                   });
                   if (res.ok) {
-                    const data = await res.json();
-                    setShareUrl(data.url);
-                    await navigator.clipboard.writeText(data.url);
+                    const json = await res.json();
+                    const shareKey = json.data?.shareKey;
+                    const url = `${window.location.origin}/s/${shareKey}`;
+                    setShareUrl(url);
+                    await navigator.clipboard.writeText(url);
                     alert('공유 링크가 복사되었습니다!');
                   }
                 } catch { /* ignore */ } finally {

@@ -199,13 +199,27 @@ export default function HomePage() {
   };
 
   const handleSubmitCalc = () => {
+    const housePrice = store.selectedPrice || 500_000_000;
     const result = calculate({
-      housePrice: store.selectedPrice || 500_000_000,
+      housePrice,
       ...store.inputs,
     });
     setCalcResult(result);
     store.setShowInputForm(false);
     store.setShowResult(true);
+
+    // 서버에 이력 저장 (fire-and-forget)
+    fetch('/api/calculate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({
+        housePrice,
+        ...store.inputs,
+        lawdCd: store.lawdCd,
+        sigungu: store.regionName,
+      }),
+    }).catch(() => {});
   };
 
   return (

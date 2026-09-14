@@ -29,7 +29,8 @@ export default function HistoryDrawer({ onClose }: Props) {
         credentials: 'include',
       });
       if (!res.ok) return [];
-      return res.json();
+      const json = await res.json();
+      return json.data ?? [];
     },
   });
 
