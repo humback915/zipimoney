@@ -2,7 +2,7 @@ import { useEffect, useCallback, useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { calculate } from '../lib/calculator';
-import type { AptComplex, CalcResult, PropertyType } from '../lib/types';
+import type { AptComplex, CalcResult, PropertyType, PriceMode } from '../lib/types';
 import { useAppStore } from '../stores/app-store';
 import { useGeolocation } from '../hooks/useGeolocation';
 import { useAuth } from '../hooks/useAuth';
@@ -255,26 +255,45 @@ export default function HomePage() {
       </header>
 
       {/* 카테고리 탭 */}
-      <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-4 py-1.5 flex gap-1.5 overflow-x-auto z-20">
-        {([
-          ['all', '전체'],
-          ['apt', '아파트'],
-          ['villa', '빌라'],
-          ['officetel', '오피스텔'],
-          ['house', '단독/다가구'],
-        ] as [PropertyType, string][]).map(([value, label]) => (
-          <button
-            key={value}
-            onClick={() => setPropertyFilter(value)}
-            className={`px-3 py-1.5 text-xs font-medium rounded-full whitespace-nowrap transition-colors ${
-              propertyFilter === value
-                ? 'bg-brand-500 text-white'
-                : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
-            }`}
-          >
-            {label}
-          </button>
-        ))}
+      <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-4 py-1.5 flex items-center gap-1.5 z-20">
+        <div className="flex gap-1.5 overflow-x-auto flex-1">
+          {([
+            ['all', '전체'],
+            ['apt', '아파트'],
+            ['villa', '빌라'],
+            ['officetel', '오피스텔'],
+            ['house', '단독/다가구'],
+          ] as [PropertyType, string][]).map(([value, label]) => (
+            <button
+              key={value}
+              onClick={() => setPropertyFilter(value)}
+              className={`px-3 py-1.5 text-xs font-medium rounded-full whitespace-nowrap transition-colors ${
+                propertyFilter === value
+                  ? 'bg-brand-500 text-white'
+                  : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+        <button
+          onClick={() => {
+            const next: Record<PriceMode, PriceMode> = {
+              default: 'iceAmericano',
+              iceAmericano: 'chicken',
+              chicken: 'default',
+            };
+            store.setPriceMode(next[store.priceMode]);
+          }}
+          className={`ml-auto px-3 py-1.5 text-xs font-medium rounded-full whitespace-nowrap transition-colors flex-shrink-0 ${
+            store.priceMode !== 'default'
+              ? 'bg-brand-500 text-white'
+              : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
+          }`}
+        >
+          {store.priceMode === 'iceAmericano' ? '☕ 아아' : store.priceMode === 'chicken' ? '🍗 치킨' : '₩ 기본'}
+        </button>
       </div>
 
       {/* GPS 에러 안내 */}
@@ -294,6 +313,7 @@ export default function HomePage() {
             myLng={geo.lng}
             complexes={filteredComplexes}
             regionName={store.regionName}
+            priceMode={store.priceMode}
             onComplexClick={handleComplexClick}
             onCenterChanged={handleMapCenterChanged}
             onMapClick={handleMapClick}
@@ -374,6 +394,7 @@ export default function HomePage() {
           complex={store.selectedComplex}
           onClose={() => store.setSelectedComplex(null)}
           onCalculate={(price) => requireAuth(() => handleCalculate(price))}
+          priceMode={store.priceMode}
         />
       )}
 

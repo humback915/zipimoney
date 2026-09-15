@@ -51,6 +51,8 @@ export interface AptDeal {
 
 export type PropertyType = 'all' | 'apt' | 'villa' | 'officetel' | 'house'
 
+export type PriceMode = 'default' | 'iceAmericano' | 'chicken'
+
 export interface AptComplex {
   name: string
   dong: string

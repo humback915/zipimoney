@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import type { AptComplex } from '../lib/types';
+import type { AptComplex, PriceMode } from '../lib/types';
 import districtsData from '../data/districts.json';
 
 declare global {
@@ -47,6 +47,7 @@ interface Props {
   myLng?: number;
   complexes: AptComplex[];
   regionName?: string;
+  priceMode: PriceMode;
   onComplexClick: (complex: AptComplex) => void;
   onCenterChanged?: (lat: number, lng: number) => void;
   onMapClick?: (lat: number, lng: number) => void;
@@ -65,7 +66,17 @@ interface DistrictEntry {
   co: number[][][][];
 }
 
-function formatPriceLabel(price: number): string {
+function formatPriceLabel(price: number, mode: PriceMode): string {
+  if (mode === 'iceAmericano') {
+    const cups = Math.round(price / 4500);
+    if (cups >= 10000) return `☕${(cups / 10000).toFixed(1)}만잔`;
+    return `☕${cups.toLocaleString()}잔`;
+  }
+  if (mode === 'chicken') {
+    const count = Math.round(price / 22000);
+    if (count >= 10000) return `🍗${(count / 10000).toFixed(1)}만마리`;
+    return `🍗${count.toLocaleString()}마리`;
+  }
   const eok = price / 100_000_000;
   if (eok >= 1) {
     return `${eok.toFixed(1)}억`;
@@ -82,7 +93,7 @@ function getPriceColor(price: number): string {
   return '#E53935';
 }
 
-export default function KakaoMap({ lat, lng, myLat, myLng, complexes, regionName, onComplexClick, onCenterChanged, onMapClick }: Props) {
+export default function KakaoMap({ lat, lng, myLat, myLng, complexes, regionName, priceMode, onComplexClick, onCenterChanged, onMapClick }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<KakaoMapInstance | null>(null);
   const markersRef = useRef<KakaoMarker[]>([]);
@@ -287,7 +298,7 @@ export default function KakaoMap({ lat, lng, myLat, myLng, complexes, regionName
       const marker = new window.kakao.maps.Marker({ map, position });
       markersRef.current.push(marker);
 
-      const label = formatPriceLabel(complex.avgPrice);
+      const label = formatPriceLabel(complex.avgPrice, priceMode);
       const bgColor = getPriceColor(complex.avgPrice);
       const overlay = new window.kakao.maps.CustomOverlay({
         map,
@@ -311,7 +322,7 @@ export default function KakaoMap({ lat, lng, myLat, myLng, complexes, regionName
         onComplexClickRef.current(complex);
       });
     });
-  }, [complexes]);
+  }, [complexes, priceMode]);
 
   return (
     <div

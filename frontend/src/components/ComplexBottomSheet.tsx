@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import type { AptComplex, AptDeal } from '../lib/types';
+import type { AptComplex, AptDeal, PriceMode } from '../lib/types';
 
 interface Props {
   complex: AptComplex;
   onClose: () => void;
   onCalculate: (price: number) => void;
+  priceMode: PriceMode;
 }
 
 type AreaFilter = 'all' | '59' | '84';
@@ -17,6 +18,20 @@ function formatPrice(price: number): string {
   return `${man.toLocaleString()}만`;
 }
 
+function formatFunPrice(price: number, mode: PriceMode): string | null {
+  if (mode === 'iceAmericano') {
+    const cups = Math.round(price / 4500);
+    if (cups >= 10000) return `☕ ${(cups / 10000).toFixed(1)}만잔`;
+    return `☕ ${cups.toLocaleString()}잔`;
+  }
+  if (mode === 'chicken') {
+    const count = Math.round(price / 22000);
+    if (count >= 10000) return `🍗 ${(count / 10000).toFixed(1)}만마리`;
+    return `🍗 ${count.toLocaleString()}마리`;
+  }
+  return null;
+}
+
 function formatDate(deal: AptDeal): string {
   return `${deal.dealYear}.${String(deal.dealMonth).padStart(2, '0')}.${String(deal.dealDay).padStart(2, '0')}`;
 }
@@ -25,6 +40,7 @@ export default function ComplexBottomSheet({
   complex,
   onClose,
   onCalculate,
+  priceMode,
 }: Props) {
   const [areaFilter, setAreaFilter] = useState<AreaFilter>('all');
 
@@ -98,6 +114,11 @@ export default function ComplexBottomSheet({
                 <div className="flex justify-between items-center">
                   <span className="font-semibold text-brand-500">
                     {formatPrice(deal.price)}
+                    {formatFunPrice(deal.price, priceMode) && (
+                      <span className="ml-1.5 text-sm font-normal text-gray-500">
+                        · {formatFunPrice(deal.price, priceMode)}
+                      </span>
+                    )}
                   </span>
                   <span className="text-xs text-gray-400">
                     {formatDate(deal)}
@@ -119,7 +140,7 @@ export default function ComplexBottomSheet({
           className="w-full py-3 bg-brand-500 text-white font-semibold rounded-2xl
                      hover:bg-brand-700 transition-colors"
         >
-          이 집 사려면? (평균 {formatPrice(complex.avgPrice)})
+          이 집 사려면? (평균 {formatPrice(complex.avgPrice)}{formatFunPrice(complex.avgPrice, priceMode) ? ` · ${formatFunPrice(complex.avgPrice, priceMode)}` : ''})
         </button>
       </div>
     </div>
