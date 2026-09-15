@@ -4,9 +4,29 @@ import { useAuth, getKakaoLoginUrl } from '../hooks/useAuth';
 interface Props {
   onShowProfile?: () => void;
   onShowHistory?: () => void;
+  birthYear?: number;
 }
 
-export default function AuthButton({ onShowProfile, onShowHistory }: Props) {
+function parseAgeRange(ageRange: string | null): number | null {
+  if (!ageRange) return null;
+  const match = ageRange.match(/^(\d+)/);
+  if (!match) return null;
+  return Number(match[1]) + 5;
+}
+
+function computeConsumption(birthYear: number | undefined, ageRange: string | null): number | null {
+  const currentYear = new Date().getFullYear();
+  let age: number | null = null;
+  if (birthYear != null) {
+    age = currentYear - birthYear;
+  } else {
+    age = parseAgeRange(ageRange);
+  }
+  if (age == null || age <= 0) return null;
+  return age * 365;
+}
+
+export default function AuthButton({ onShowProfile, onShowHistory, birthYear }: Props) {
   const { user, isLoggedIn, isLoading, logout, withdraw } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -44,8 +64,15 @@ export default function AuthButton({ onShowProfile, onShowHistory }: Props) {
     );
   }
 
+  const consumption = isLoggedIn ? computeConsumption(birthYear, user?.ageRange ?? null) : null;
+
   return (
-    <div className="relative" ref={menuRef}>
+    <div className="relative flex items-center gap-2" ref={menuRef}>
+      {consumption != null && (
+        <span className="text-[11px] text-white/80 whitespace-nowrap">
+          ☕{consumption.toLocaleString()}잔 🍗{consumption.toLocaleString()}마리
+        </span>
+      )}
       <button
         onClick={() => setMenuOpen(!menuOpen)}
         className="flex items-center gap-2 hover:opacity-80 transition-opacity"

@@ -7,6 +7,7 @@ interface User {
   name: string | null
   profileImage: string | null
   email: string | null
+  ageRange: string | null
 }
 
 async function fetchMe(): Promise<User | null> {

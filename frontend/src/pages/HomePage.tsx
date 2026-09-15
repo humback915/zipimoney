@@ -239,6 +239,7 @@ export default function HomePage() {
               store.setShowInputForm(true);
             }}
             onShowHistory={() => requireAuth(() => setShowHistory(true))}
+            birthYear={store.inputs.birthYear}
           />
         </div>
         <div className="mt-2 flex items-center gap-2">
@@ -277,23 +278,24 @@ export default function HomePage() {
             </button>
           ))}
         </div>
-        <button
-          onClick={() => {
-            const next: Record<PriceMode, PriceMode> = {
-              default: 'iceAmericano',
-              iceAmericano: 'chicken',
-              chicken: 'default',
-            };
-            store.setPriceMode(next[store.priceMode]);
-          }}
-          className={`ml-auto px-3 py-1.5 text-xs font-medium rounded-full whitespace-nowrap transition-colors flex-shrink-0 ${
-            store.priceMode !== 'default'
-              ? 'bg-brand-500 text-white'
-              : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
-          }`}
-        >
-          {store.priceMode === 'iceAmericano' ? '☕ 아아' : store.priceMode === 'chicken' ? '🍗 치킨' : '₩ 기본'}
-        </button>
+        <div className="flex gap-1 flex-shrink-0 ml-auto">
+          {([
+            ['iceAmericano', '☕ 아아'],
+            ['chicken', '🍗 치킨'],
+          ] as [PriceMode, string][]).map(([mode, label]) => (
+            <button
+              key={mode}
+              onClick={() => store.setPriceMode(store.priceMode === mode ? 'default' : mode)}
+              className={`px-3 py-1.5 text-xs font-medium rounded-full whitespace-nowrap transition-colors ${
+                store.priceMode === mode
+                  ? 'bg-brand-500 text-white'
+                  : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* GPS 에러 안내 */}

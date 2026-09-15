@@ -58,7 +58,7 @@ export const useAppStore = create<AppState>()(
       showInputForm: false,
       showResult: false,
       selectedPrice: 0,
-      priceMode: 'default' as PriceMode,
+      priceMode: 'iceAmericano' as PriceMode,
 
       setLocation: (lat, lng, lawdCd, regionName) =>
         set({ lat, lng, lawdCd, regionName }),
