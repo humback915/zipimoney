@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 
-interface User {
+export interface User {
   id: number
   kakaoId?: string
   nickname: string | null
@@ -8,6 +8,7 @@ interface User {
   profileImage: string | null
   email: string | null
   ageRange: string | null
+  birthYear: number | null
 }
 
 async function fetchMe(): Promise<User | null> {
@@ -15,7 +16,21 @@ async function fetchMe(): Promise<User | null> {
   if (res.status === 401) return null
   if (!res.ok) return null
   const json = await res.json()
-  return json.data ?? null
+  const user = json.data as User | null
+  if (!user) return null
+
+  // 프로필에서 birthYear 가져오기
+  try {
+    const profileRes = await fetch('/api/profile', { credentials: 'include' })
+    if (profileRes.ok) {
+      const profileJson = await profileRes.json()
+      user.birthYear = profileJson.data?.birthYear ?? null
+    }
+  } catch {
+    // 프로필 조회 실패 시 무시
+  }
+
+  return user
 }
 
 export function useAuth() {
@@ -52,6 +67,12 @@ export function useAuth() {
     },
   })
 
+  const setUserBirthYear = (birthYear: number) => {
+    queryClient.setQueryData(['auth', 'me'], (prev: User | null) =>
+      prev ? { ...prev, birthYear } : prev,
+    )
+  }
+
   return {
     user: user ?? null,
     isLoggedIn: !!user,
@@ -59,6 +80,7 @@ export function useAuth() {
     logout: logoutMutation.mutate,
     withdraw: withdrawMutation.mutate,
     isLoggingOut: logoutMutation.isPending,
+    setUserBirthYear,
   }
 }
 

@@ -16,6 +16,7 @@ import SearchBar from '../components/SearchBar';
 import AuthButton from '../components/AuthButton';
 import HistoryDrawer from '../components/HistoryDrawer';
 import LoginOverlay from '../components/LoginOverlay';
+import BirthYearModal from '../components/BirthYearModal';
 
 async function fetchRegion(lat: number, lng: number) {
   const res = await fetch(`/api/geocode?lat=${lat}&lng=${lng}`);
@@ -40,22 +41,13 @@ function getCurrentYmd(): string {
 
 const ConsumptionBar = memo(function ConsumptionBar({
   birthYear,
-  ageRange,
 }: {
-  birthYear?: number;
-  ageRange: string | null;
+  birthYear: number | null;
 }) {
-  const currentYear = new Date().getFullYear();
-  let age: number | null = null;
-  if (birthYear != null) {
-    age = currentYear - birthYear;
-  } else if (ageRange) {
-    const match = ageRange.match(/^(\d+)/);
-    if (match) age = Number(match[1]) + 5;
-  }
-  if (age == null || age <= 0) return null;
-  const days = age * 365;
-  const formatted = days.toLocaleString();
+  if (birthYear == null) return null;
+  const age = new Date().getFullYear() - birthYear;
+  if (age <= 0) return null;
+  const formatted = (age * 365).toLocaleString();
   return (
     <div className="absolute top-3 left-1/2 -translate-x-1/2 z-20
                     bg-black/75 backdrop-blur-sm text-white px-4 py-1.5
@@ -68,7 +60,7 @@ const ConsumptionBar = memo(function ConsumptionBar({
 export default function HomePage() {
   const geo = useGeolocation();
   const store = useAppStore();
-  const { user } = useAuth();
+  const { user, setUserBirthYear } = useAuth();
   const [calcResult, setCalcResult] = useState<CalcResult | null>(null);
   const [mapReady, setMapReady] = useState(false);
   const [mapMoved, setMapMoved] = useState(false);
@@ -353,7 +345,7 @@ export default function HomePage() {
         )}
 
         {/* 누적 소비량 바 */}
-        <ConsumptionBar birthYear={store.inputs.birthYear} ageRange={user?.ageRange ?? null} />
+        {user && <ConsumptionBar birthYear={user.birthYear} />}
 
         {/* 로딩 */}
         {dealsQuery.isLoading && <DealsLoadingOverlay />}
@@ -453,6 +445,16 @@ export default function HomePage() {
       {/* 로그인 오버레이 */}
       {showLoginOverlay && (
         <LoginOverlay onClose={() => setShowLoginOverlay(false)} />
+      )}
+
+      {/* 출생연도 필수 입력 모달 */}
+      {user && user.birthYear == null && (
+        <BirthYearModal
+          onSaved={(year) => {
+            setUserBirthYear(year);
+            store.setInputs({ birthYear: year });
+          }}
+        />
       )}
 
       {/* 계산 이력 */}
