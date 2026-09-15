@@ -1,4 +1,4 @@
-import { useEffect, useCallback, useState, useMemo } from 'react';
+import { useEffect, useCallback, useState, useMemo, memo } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { calculate } from '../lib/calculator';
@@ -37,6 +37,33 @@ function getCurrentYmd(): string {
   const d = new Date(now.getFullYear(), now.getMonth() - 1, 1);
   return `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}`;
 }
+
+const ConsumptionBar = memo(function ConsumptionBar({
+  birthYear,
+  ageRange,
+}: {
+  birthYear?: number;
+  ageRange: string | null;
+}) {
+  const currentYear = new Date().getFullYear();
+  let age: number | null = null;
+  if (birthYear != null) {
+    age = currentYear - birthYear;
+  } else if (ageRange) {
+    const match = ageRange.match(/^(\d+)/);
+    if (match) age = Number(match[1]) + 5;
+  }
+  if (age == null || age <= 0) return null;
+  const days = age * 365;
+  const formatted = days.toLocaleString();
+  return (
+    <div className="absolute top-3 left-1/2 -translate-x-1/2 z-20
+                    bg-black/75 backdrop-blur-sm text-white px-4 py-1.5
+                    rounded-full text-sm font-semibold whitespace-nowrap shadow-lg">
+      ☕ {formatted}잔 · 🍗 {formatted}마리
+    </div>
+  );
+});
 
 export default function HomePage() {
   const geo = useGeolocation();
@@ -239,7 +266,6 @@ export default function HomePage() {
               store.setShowInputForm(true);
             }}
             onShowHistory={() => requireAuth(() => setShowHistory(true))}
-            birthYear={store.inputs.birthYear}
           />
         </div>
         <div className="mt-2 flex items-center gap-2">
@@ -325,6 +351,9 @@ export default function HomePage() {
         ) : (
           <MapSkeleton />
         )}
+
+        {/* 누적 소비량 바 */}
+        <ConsumptionBar birthYear={store.inputs.birthYear} ageRange={user?.ageRange ?? null} />
 
         {/* 로딩 */}
         {dealsQuery.isLoading && <DealsLoadingOverlay />}
