@@ -51,8 +51,9 @@ const ConsumptionBar = memo(function ConsumptionBar({
   return (
     <div className="absolute top-3 left-1/2 -translate-x-1/2 z-20
                     bg-black/75 backdrop-blur-sm text-white px-4 py-1.5
-                    rounded-full text-sm font-semibold whitespace-nowrap shadow-lg">
-      ☕ {formatted}잔 · 🍗 {formatted}마리
+                    rounded-2xl text-center shadow-lg">
+      <p className="text-[11px] text-white/70">{age}년간 매일 먹었다면</p>
+      <p className="text-sm font-semibold">☕ {formatted}잔 · 🍗 {formatted}마리</p>
     </div>
   );
 });
