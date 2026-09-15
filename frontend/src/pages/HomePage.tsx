@@ -72,31 +72,43 @@ const ConsumptionBar = memo(function ConsumptionBar({
   const toggle = (mode: 'coffee' | 'chicken') =>
     onFilterChange(filter === mode ? null : mode);
 
+  const btnBase = 'flex items-center justify-between w-full rounded-lg px-3 py-1.5 transition-colors border';
+  const btnOff = 'border-white/20 hover:bg-white/10 active:bg-white/20';
+  const btnOn = 'border-brand-400 bg-brand-500/30';
+
   return (
     <div className="absolute top-3 left-1/2 -translate-x-1/2 z-20
-                    bg-black/75 backdrop-blur-sm text-white px-4 py-2
-                    rounded-2xl text-center shadow-lg">
-      <p className="text-[11px] text-white/70 mb-1">{age}년간 매일 먹었다면</p>
-      <button
-        onClick={() => toggle('coffee')}
-        className={`block w-full text-sm font-semibold rounded-lg px-2 py-0.5 transition-colors ${
-          filter === 'coffee' ? 'bg-white/20' : 'hover:bg-white/10'
-        }`}
-      >
-        ☕ {days.toLocaleString()}잔
-        <span className="text-[11px] font-normal text-white/60"> ({coffeeBudget})</span>
-        {filter === 'coffee' && <span className="ml-1 text-[10px] text-brand-300">필터 ON</span>}
-      </button>
-      <button
-        onClick={() => toggle('chicken')}
-        className={`block w-full text-sm font-semibold rounded-lg px-2 py-0.5 transition-colors ${
-          filter === 'chicken' ? 'bg-white/20' : 'hover:bg-white/10'
-        }`}
-      >
-        🍗 {days.toLocaleString()}마리
-        <span className="text-[11px] font-normal text-white/60"> ({chickenBudget})</span>
-        {filter === 'chicken' && <span className="ml-1 text-[10px] text-brand-300">필터 ON</span>}
-      </button>
+                    bg-black/75 backdrop-blur-sm text-white px-3 py-2.5
+                    rounded-2xl text-center shadow-lg min-w-[220px]">
+      <p className="text-[11px] text-white/70 mb-1.5">{age}년간 매일 먹었다면</p>
+      <div className="flex flex-col gap-1.5">
+        <button onClick={() => toggle('coffee')} className={`${btnBase} ${filter === 'coffee' ? btnOn : btnOff}`}>
+          <span className="text-sm font-semibold">
+            ☕ {days.toLocaleString()}잔
+            <span className="text-[11px] font-normal text-white/60"> ({coffeeBudget})</span>
+          </span>
+          <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${
+            filter === 'coffee'
+              ? 'bg-brand-500 text-white'
+              : 'bg-white/15 text-white/70'
+          }`}>
+            {filter === 'coffee' ? 'ON' : '필터'}
+          </span>
+        </button>
+        <button onClick={() => toggle('chicken')} className={`${btnBase} ${filter === 'chicken' ? btnOn : btnOff}`}>
+          <span className="text-sm font-semibold">
+            🍗 {days.toLocaleString()}마리
+            <span className="text-[11px] font-normal text-white/60"> ({chickenBudget})</span>
+          </span>
+          <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${
+            filter === 'chicken'
+              ? 'bg-brand-500 text-white'
+              : 'bg-white/15 text-white/70'
+          }`}>
+            {filter === 'chicken' ? 'ON' : '필터'}
+          </span>
+        </button>
+      </div>
     </div>
   );
 });
@@ -471,9 +483,10 @@ export default function HomePage() {
         {/* 내 조건 입력하기 FAB */}
         <button
           onClick={() => requireAuth(() => store.setShowInputForm(true))}
-          className="absolute bottom-4 right-4 bg-brand-500 text-white px-6 py-3.5
+          className="absolute bottom-4 right-4 bg-brand-500 text-white
+                     px-4 py-2.5 sm:px-6 sm:py-3.5
                      rounded-full shadow-md hover:bg-brand-700 transition-colors
-                     font-semibold text-sm z-20"
+                     font-semibold text-xs sm:text-sm z-20"
         >
           내 조건 입력하기
         </button>
