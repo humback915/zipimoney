@@ -299,12 +299,13 @@ export default function HomePage() {
         </div>
         <div className="flex gap-1 flex-shrink-0 ml-auto">
           {([
+            ['default', '₩ 금액'],
             ['iceAmericano', '☕ 아아'],
             ['chicken', '🍗 치킨'],
           ] as [PriceMode, string][]).map(([mode, label]) => (
             <button
               key={mode}
-              onClick={() => store.setPriceMode(store.priceMode === mode ? 'default' : mode)}
+              onClick={() => store.setPriceMode(mode)}
               className={`px-3 py-1.5 text-xs font-medium rounded-full whitespace-nowrap transition-colors ${
                 store.priceMode === mode
                   ? 'bg-brand-500 text-white'
