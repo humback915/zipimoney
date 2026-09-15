@@ -18,4 +18,5 @@ public class UserResponse {
     String email;
     String gender;
     String ageRange;
+    Integer birthYear;
 }

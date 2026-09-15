@@ -1,0 +1,1 @@
+async function s(o,t={}){var e;const a=await fetch(`${o}`,{...t,credentials:"include",headers:{"Content-Type":"application/json",...t.headers}});if(!a.ok){const r=await a.json().catch(()=>({}));throw new Error(((e=r.error)==null?void 0:e.errorMessage)??`HTTP ${a.status}`)}return(await a.json()).data}export{s as a};

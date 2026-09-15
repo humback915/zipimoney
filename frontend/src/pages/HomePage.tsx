@@ -57,10 +57,12 @@ const ConsumptionBar = memo(function ConsumptionBar({
   birthYear,
   filter,
   onFilterChange,
+  onEditBirthYear,
 }: {
   birthYear: number | null;
   filter: ConsumptionFilter;
   onFilterChange: (f: ConsumptionFilter) => void;
+  onEditBirthYear: () => void;
 }) {
   if (birthYear == null) return null;
   const age = new Date().getFullYear() - birthYear;
@@ -80,7 +82,16 @@ const ConsumptionBar = memo(function ConsumptionBar({
     <div className="absolute top-3 left-1/2 -translate-x-1/2 z-20
                     bg-black/75 backdrop-blur-sm text-white px-3 py-2.5
                     rounded-2xl text-center shadow-lg min-w-[220px]">
-      <p className="text-[11px] text-white/70 mb-1.5">{age}년간 매일 먹었다면</p>
+      <button
+        onClick={onEditBirthYear}
+        className="text-[11px] text-white/70 mb-1.5 hover:text-white transition-colors
+                   flex items-center justify-center gap-1 mx-auto"
+      >
+        {age}년간 매일 먹었다면
+        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+        </svg>
+      </button>
       <div className="flex flex-col gap-1.5">
         <button onClick={() => toggle('coffee')} className={`${btnBase} ${filter === 'coffee' ? btnOn : btnOff}`}>
           <span className="text-sm font-semibold">
@@ -125,6 +136,7 @@ export default function HomePage() {
   const [showLoginOverlay, setShowLoginOverlay] = useState(false);
   const [, setShowProfile] = useState(false);
   const [consumptionFilter, setConsumptionFilter] = useState<ConsumptionFilter>(null);
+  const [showBirthYearEdit, setShowBirthYearEdit] = useState(false);
   const [mapLoadFailed, setMapLoadFailed] = useState(false);
   const [propertyFilter, setPropertyFilter] = useState<PropertyType>('all');
 
@@ -424,6 +436,7 @@ export default function HomePage() {
               else if (f === 'chicken') store.setPriceMode('chicken');
               else store.setPriceMode('default');
             }}
+            onEditBirthYear={() => setShowBirthYearEdit(true)}
           />
         )}
 
@@ -437,7 +450,19 @@ export default function HomePage() {
 
         {/* 데이터 비어있음 */}
         {dealsQuery.isSuccess && filteredComplexes.length === 0 && (
-          <DealsEmptyOverlay />
+          consumptionFilter ? (
+            <div className="absolute top-24 left-1/2 -translate-x-1/2 bg-white dark:bg-gray-800
+                            px-5 py-3 rounded-2xl shadow-lg text-sm z-20 max-w-xs text-center">
+              <p className="text-gray-600 dark:text-gray-300 font-medium">
+                {consumptionFilter === 'coffee' ? '☕' : '🍗'} 이 금액으로 살 수 있는 매물이 없습니다
+              </p>
+              <p className="text-gray-400 dark:text-gray-500 text-xs mt-1">
+                필터를 해제하거나 다른 지역을 검색해 보세요.
+              </p>
+            </div>
+          ) : (
+            <DealsEmptyOverlay />
+          )
         )}
 
         {/* 이 지역 검색 버튼 (하단 중앙) */}
@@ -528,15 +553,18 @@ export default function HomePage() {
         <LoginOverlay onClose={() => setShowLoginOverlay(false)} />
       )}
 
-      {/* 출생연도 필수 입력 모달 */}
-      {user && user.birthYear == null && (
+      {/* 출생연도 필수 입력 모달 (최초 or 수정) */}
+      {(user && user.birthYear == null) || showBirthYearEdit ? (
         <BirthYearModal
           onSaved={(year) => {
             setUserBirthYear(year);
             store.setInputs({ birthYear: year });
+            setShowBirthYearEdit(false);
           }}
+          onClose={user?.birthYear != null ? () => setShowBirthYearEdit(false) : undefined}
+          defaultValue={user?.birthYear ?? undefined}
         />
-      )}
+      ) : null}
 
       {/* 계산 이력 */}
       {showHistory && (

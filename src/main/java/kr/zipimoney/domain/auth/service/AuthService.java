@@ -58,6 +58,9 @@ public class AuthService {
     @Transactional(readOnly = true)
     public UserResponse getCurrentUser(Long userId) {
         User user = findActiveUser(userId);
+        Integer birthYear = userProfileRepository.findByUserId(userId)
+                .map(p -> p.getBirthYear())
+                .orElse(null);
         return UserResponse.builder()
                 .id(user.getId())
                 .kakaoId(user.getKakaoId())
@@ -67,6 +70,7 @@ public class AuthService {
                 .email(user.getEmail())
                 .gender(user.getGender())
                 .ageRange(user.getAgeRange())
+                .birthYear(birthYear)
                 .build();
     }
 

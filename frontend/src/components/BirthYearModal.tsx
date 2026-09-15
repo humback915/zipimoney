@@ -3,11 +3,13 @@ import { apiFetch } from '../api/client';
 
 interface Props {
   onSaved: (birthYear: number) => void;
+  onClose?: () => void;
+  defaultValue?: number;
 }
 
-export default function BirthYearModal({ onSaved }: Props) {
+export default function BirthYearModal({ onSaved, onClose, defaultValue }: Props) {
   const currentYear = new Date().getFullYear();
-  const [value, setValue] = useState('');
+  const [value, setValue] = useState(defaultValue?.toString() ?? '');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -36,7 +38,7 @@ export default function BirthYearModal({ onSaved }: Props) {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
       <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-8 mx-4 max-w-sm w-full text-center">
         <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-1">
-          출생연도를 알려주세요
+          {defaultValue ? '출생연도 변경' : '출생연도를 알려주세요'}
         </h2>
         <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
           태어나서 지금까지 몇 잔의 아아와<br />몇 마리의 치킨을 먹었는지 알려드릴게요!
@@ -69,6 +71,16 @@ export default function BirthYearModal({ onSaved }: Props) {
         >
           {saving ? '저장 중...' : '확인'}
         </button>
+
+        {onClose && (
+          <button
+            onClick={onClose}
+            className="mt-3 text-sm text-gray-400 dark:text-gray-500 hover:text-gray-600
+                       dark:hover:text-gray-300 transition-colors"
+          >
+            닫기
+          </button>
+        )}
       </div>
     </div>
   );
