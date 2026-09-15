@@ -1,3 +1,5 @@
+import { useState, useEffect } from 'react';
+
 /** 기본 스켈레톤 블록 */
 export function Skeleton({ className = '' }: { className?: string }) {
   return (
@@ -99,11 +101,21 @@ export function DealsErrorOverlay({ onRetry }: { onRetry: () => void }) {
   );
 }
 
-/** 데이터 비어있을 때 안내 */
+/** 데이터 비어있을 때 안내 (3초 후 자동 사라짐) */
 export function DealsEmptyOverlay() {
+  const [visible, setVisible] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setVisible(false), 3000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (!visible) return null;
+
   return (
     <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-white dark:bg-gray-800
-                    px-5 py-3 rounded-2xl shadow-lg text-sm z-20 max-w-xs text-center">
+                    px-5 py-3 rounded-2xl shadow-lg text-sm z-20 max-w-xs text-center
+                    animate-fade-out">
       <p className="text-gray-600 dark:text-gray-300 font-medium">
         이 지역의 거래 데이터가 없습니다
       </p>

@@ -406,7 +406,12 @@ export default function HomePage() {
           <ConsumptionBar
             birthYear={user.birthYear}
             filter={consumptionFilter}
-            onFilterChange={setConsumptionFilter}
+            onFilterChange={(f) => {
+              setConsumptionFilter(f);
+              if (f === 'coffee') store.setPriceMode('iceAmericano');
+              else if (f === 'chicken') store.setPriceMode('chicken');
+              else store.setPriceMode('default');
+            }}
           />
         )}
 
