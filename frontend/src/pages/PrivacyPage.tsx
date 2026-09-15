@@ -48,7 +48,7 @@ export default function PrivacyPage() {
                 </tr>
                 <tr>
                   <td className="border border-gray-200 dark:border-gray-700 px-3 py-2 font-medium">서비스 이용</td>
-                  <td className="border border-gray-200 dark:border-gray-700 px-3 py-2">연봉/소득, 저축률, 보유 자산, 대출 비율 등 계산 입력값, 계산 결과</td>
+                  <td className="border border-gray-200 dark:border-gray-700 px-3 py-2">출생연도(필수), 연봉/소득, 저축률, 보유 자산, 대출 비율, 직업 카테고리 등 계산 입력값, 계산 결과</td>
                   <td className="border border-gray-200 dark:border-gray-700 px-3 py-2">사용자 직접 입력</td>
                 </tr>
               </tbody>
@@ -59,7 +59,7 @@ export default function PrivacyPage() {
             <h2 className="text-base font-bold text-gray-900 dark:text-white mb-2">2. 개인정보 수집 및 이용 목적</h2>
             <ul className="list-disc pl-5 space-y-1">
               <li><strong>회원 식별 및 인증:</strong> 카카오 로그인을 통한 회원 관리</li>
-              <li><strong>서비스 제공:</strong> 부동산 자금 계산, 실거래가 조회, 계산 이력 관리</li>
+              <li><strong>서비스 제공:</strong> 부동산 자금 계산, 실거래가 조회, 계산 이력 관리, 누적 소비량 환산(재미 요소)</li>
               <li><strong>위치 기반 서비스:</strong> 현재 위치 기반 지역 부동산 데이터 제공</li>
               <li><strong>서비스 개선:</strong> 이용 통계 분석 및 서비스 품질 향상</li>
             </ul>

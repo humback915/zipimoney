@@ -49,6 +49,8 @@ export default function TermsPage() {
               <li>주택 구매 자금 시뮬레이션 계산</li>
               <li>계산 결과 저장 및 이력 관리</li>
               <li>계산 결과 공유</li>
+              <li>아이스아메리카노/치킨 가격 환산 모드 (재미 요소)</li>
+              <li>출생연도 기반 누적 소비량 계산 및 매물 필터링 (재미 요소)</li>
             </ul>
           </section>
 
