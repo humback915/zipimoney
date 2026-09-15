@@ -51,28 +51,52 @@ function formatKrw(amount: number): string {
 const COFFEE_PRICE = 5_000;
 const CHICKEN_PRICE = 18_000;
 
+type ConsumptionFilter = 'coffee' | 'chicken' | null;
+
 const ConsumptionBar = memo(function ConsumptionBar({
   birthYear,
+  filter,
+  onFilterChange,
 }: {
   birthYear: number | null;
+  filter: ConsumptionFilter;
+  onFilterChange: (f: ConsumptionFilter) => void;
 }) {
   if (birthYear == null) return null;
   const age = new Date().getFullYear() - birthYear;
   if (age <= 0) return null;
   const days = age * 365;
+  const coffeeBudget = formatKrw(days * COFFEE_PRICE);
+  const chickenBudget = formatKrw(days * CHICKEN_PRICE);
+
+  const toggle = (mode: 'coffee' | 'chicken') =>
+    onFilterChange(filter === mode ? null : mode);
+
   return (
     <div className="absolute top-3 left-1/2 -translate-x-1/2 z-20
                     bg-black/75 backdrop-blur-sm text-white px-4 py-2
                     rounded-2xl text-center shadow-lg">
       <p className="text-[11px] text-white/70 mb-1">{age}년간 매일 먹었다면</p>
-      <p className="text-sm font-semibold">
+      <button
+        onClick={() => toggle('coffee')}
+        className={`block w-full text-sm font-semibold rounded-lg px-2 py-0.5 transition-colors ${
+          filter === 'coffee' ? 'bg-white/20' : 'hover:bg-white/10'
+        }`}
+      >
         ☕ {days.toLocaleString()}잔
-        <span className="text-[11px] font-normal text-white/60"> ({formatKrw(days * COFFEE_PRICE)})</span>
-      </p>
-      <p className="text-sm font-semibold">
+        <span className="text-[11px] font-normal text-white/60"> ({coffeeBudget})</span>
+        {filter === 'coffee' && <span className="ml-1 text-[10px] text-brand-300">필터 ON</span>}
+      </button>
+      <button
+        onClick={() => toggle('chicken')}
+        className={`block w-full text-sm font-semibold rounded-lg px-2 py-0.5 transition-colors ${
+          filter === 'chicken' ? 'bg-white/20' : 'hover:bg-white/10'
+        }`}
+      >
         🍗 {days.toLocaleString()}마리
-        <span className="text-[11px] font-normal text-white/60"> ({formatKrw(days * CHICKEN_PRICE)})</span>
-      </p>
+        <span className="text-[11px] font-normal text-white/60"> ({chickenBudget})</span>
+        {filter === 'chicken' && <span className="ml-1 text-[10px] text-brand-300">필터 ON</span>}
+      </button>
     </div>
   );
 });
@@ -88,6 +112,7 @@ export default function HomePage() {
   const [showHistory, setShowHistory] = useState(false);
   const [showLoginOverlay, setShowLoginOverlay] = useState(false);
   const [, setShowProfile] = useState(false);
+  const [consumptionFilter, setConsumptionFilter] = useState<ConsumptionFilter>(null);
   const [mapLoadFailed, setMapLoadFailed] = useState(false);
   const [propertyFilter, setPropertyFilter] = useState<PropertyType>('all');
 
@@ -149,11 +174,22 @@ export default function HomePage() {
     enabled: !!store.lawdCd,
   });
 
+  const consumptionBudget = useMemo(() => {
+    if (!consumptionFilter || !user?.birthYear) return null;
+    const days = (new Date().getFullYear() - user.birthYear) * 365;
+    return days * (consumptionFilter === 'coffee' ? COFFEE_PRICE : CHICKEN_PRICE);
+  }, [consumptionFilter, user?.birthYear]);
+
   const filteredComplexes = useMemo(() => {
-    const data = dealsQuery.data ?? [];
-    if (propertyFilter === 'all') return data;
-    return data.filter((c) => c.propertyType === propertyFilter);
-  }, [dealsQuery.data, propertyFilter]);
+    let data = dealsQuery.data ?? [];
+    if (propertyFilter !== 'all') {
+      data = data.filter((c) => c.propertyType === propertyFilter);
+    }
+    if (consumptionBudget != null) {
+      data = data.filter((c) => c.avgPrice <= consumptionBudget);
+    }
+    return data;
+  }, [dealsQuery.data, propertyFilter, consumptionBudget]);
 
   const handleComplexClick = useCallback(
     (complex: AptComplex) => {
@@ -366,7 +402,13 @@ export default function HomePage() {
         )}
 
         {/* 누적 소비량 바 */}
-        {user && <ConsumptionBar birthYear={user.birthYear} />}
+        {user && (
+          <ConsumptionBar
+            birthYear={user.birthYear}
+            filter={consumptionFilter}
+            onFilterChange={setConsumptionFilter}
+          />
+        )}
 
         {/* 로딩 */}
         {dealsQuery.isLoading && <DealsLoadingOverlay />}
