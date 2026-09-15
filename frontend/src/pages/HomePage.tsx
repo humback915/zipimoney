@@ -39,6 +39,18 @@ function getCurrentYmd(): string {
   return `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}`;
 }
 
+function formatKrw(amount: number): string {
+  if (amount >= 1_0000_0000) {
+    const eok = Math.floor(amount / 1_0000_0000);
+    const man = Math.floor((amount % 1_0000_0000) / 1_0000);
+    return man > 0 ? `${eok}억 ${man.toLocaleString()}만원` : `${eok}억원`;
+  }
+  return `${Math.floor(amount / 1_0000).toLocaleString()}만원`;
+}
+
+const COFFEE_PRICE = 5_000;
+const CHICKEN_PRICE = 18_000;
+
 const ConsumptionBar = memo(function ConsumptionBar({
   birthYear,
 }: {
@@ -47,13 +59,20 @@ const ConsumptionBar = memo(function ConsumptionBar({
   if (birthYear == null) return null;
   const age = new Date().getFullYear() - birthYear;
   if (age <= 0) return null;
-  const formatted = (age * 365).toLocaleString();
+  const days = age * 365;
   return (
     <div className="absolute top-3 left-1/2 -translate-x-1/2 z-20
-                    bg-black/75 backdrop-blur-sm text-white px-4 py-1.5
+                    bg-black/75 backdrop-blur-sm text-white px-4 py-2
                     rounded-2xl text-center shadow-lg">
-      <p className="text-[11px] text-white/70">{age}년간 매일 먹었다면</p>
-      <p className="text-sm font-semibold">☕ {formatted}잔 · 🍗 {formatted}마리</p>
+      <p className="text-[11px] text-white/70 mb-1">{age}년간 매일 먹었다면</p>
+      <p className="text-sm font-semibold">
+        ☕ {days.toLocaleString()}잔
+        <span className="text-[11px] font-normal text-white/60"> ({formatKrw(days * COFFEE_PRICE)})</span>
+      </p>
+      <p className="text-sm font-semibold">
+        🍗 {days.toLocaleString()}마리
+        <span className="text-[11px] font-normal text-white/60"> ({formatKrw(days * CHICKEN_PRICE)})</span>
+      </p>
     </div>
   );
 });
